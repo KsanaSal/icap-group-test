@@ -1,6 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
 import Pagination from "../components/pagination/Pagination";
+import DropDown from "../components/dropDown/DropDown";
+import DeleteModal from "../components/modals/DeleteModal";
+import AddEditModal from "../components/modals/AddEditModal";
+import Image from "next/image";
+import Mem from "../assets/images/mem-js.jpg";
+import MemTwo from "../assets/images/mem-full-stack.jpg";
 
 interface Table {
     id: number;
@@ -12,36 +18,57 @@ interface Table {
 }
 export default function Tables() {
     const [table, setTable] = useState<Table[]>([]);
-    const [filterCars, setFilterCars] = useState<Table[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [recordPerPage, setRecordPerPage] = useState(10);
     const [totalRecords, setTotalRecords] = useState(0);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
+    const [mode, setMode] = useState<"add" | "edit">("add");
+    const [currentRecordId, setCurrentRecordId] = useState(0);
 
-    const totalCars = filterCars.length;
     const totalPages = Math.ceil(totalRecords / recordPerPage);
-    const indexOfLastCar = currentPage * recordPerPage;
-    const indexOfFirstCar = indexOfLastCar - recordPerPage;
-    const currentCars = filterCars.slice(indexOfFirstCar, indexOfLastCar);
 
-    const getData = async () => {
-        fetch(
-            `https://technical-task-api.icapgroupgmbh.com/api/table/?name=&email=&phone_number=&address=&limit=${recordPerPage}&offset=${
-                (currentPage - 1) * recordPerPage
-            }`
-        )
-            .then((res) => res.json())
-            .then((res) => {
-                setTable(res.results);
-                setTotalRecords(res.count);
-            });
+    const deleteHandler = (recordId: number) => {
+        setCurrentRecordId(recordId);
+        setIsDeleteModalOpen(true);
+    };
+    const editHandler = (recordId: number) => {
+        setCurrentRecordId(recordId);
+        setIsAddEditModalOpen(true);
+        setMode("edit");
     };
 
     useEffect(() => {
+        const getData = async () => {
+            fetch(
+                `https://technical-task-api.icapgroupgmbh.com/api/table/?name=&email=&phone_number=&address=&limit=${recordPerPage}&offset=${
+                    (currentPage - 1) * recordPerPage
+                }`
+            )
+                .then((res) => res.json())
+                .then((res) => {
+                    setTable(res.results);
+                    setTotalRecords(res.count);
+                });
+        };
+
         getData();
     }, [currentPage, recordPerPage]);
 
     return (
         <main className="flex h-screen flex-col items-center p-24">
+            <div className="flex items-end justify-end w-full">
+                <button
+                    onClick={() => {
+                        setIsAddEditModalOpen(true);
+                        setMode("add");
+                    }}
+                    type="button"
+                    className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm sm:text-base lg:text-lg font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                >
+                    Add car
+                </button>
+            </div>
             <div className="mt-8 flow-root">
                 <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                     <div className="inline-block w-screen py-2 align-middle sm:px-6 lg:px-8">
@@ -79,6 +106,12 @@ export default function Tables() {
                                         >
                                             Address
                                         </th>
+                                        <th
+                                            scope="col"
+                                            className="px-3 py-3.5 text-left text-gray-900"
+                                        >
+                                            Actions
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 bg-white">
@@ -103,6 +136,17 @@ export default function Tables() {
                                                 <td className="whitespace-nowrap px-3 py-4 text-gray-700">
                                                     {tab.address}
                                                 </td>
+                                                <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                                    <DropDown
+                                                        recordId={tab.id}
+                                                        deleteHandler={
+                                                            deleteHandler
+                                                        }
+                                                        editHandler={
+                                                            editHandler
+                                                        }
+                                                    />
+                                                </td>
                                             </tr>
                                         ))}
                                 </tbody>
@@ -111,13 +155,42 @@ export default function Tables() {
                     </div>
                 </div>
             </div>
-            <Pagination
-                setCurrentPage={setCurrentPage}
-                currentPage={currentPage}
-                totalPages={totalPages}
-                setRecordPerPage={setRecordPerPage}
-                recordPerPage={recordPerPage}
+            {totalPages > 1 && (
+                <Pagination
+                    setCurrentPage={setCurrentPage}
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    setRecordPerPage={setRecordPerPage}
+                    recordPerPage={recordPerPage}
+                />
+            )}
+            <DeleteModal
+                recordId={currentRecordId}
+                isModalOpen={isDeleteModalOpen}
+                setIsDeleteModalOpen={setIsDeleteModalOpen}
             />
+            <AddEditModal
+                recordId={currentRecordId}
+                isModalOpen={isAddEditModalOpen}
+                setIsModalOpen={setIsAddEditModalOpen}
+                mode={mode}
+            />
+            <div className="flex items-start justify-center mt-[250px] gap-5">
+                <Image
+                    src={MemTwo}
+                    alt="mem-js"
+                    width={500}
+                    height={500}
+                    className="object-cover rounded-[10px]"
+                />
+                <Image
+                    src={Mem}
+                    alt="mem-js"
+                    width={500}
+                    height={500}
+                    className="object-cover rounded-[10px]"
+                />
+            </div>
         </main>
     );
 }

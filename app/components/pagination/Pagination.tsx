@@ -2,7 +2,6 @@ import {
     ArrowLongLeftIcon,
     ArrowLongRightIcon,
 } from "@heroicons/react/20/solid";
-import { useState } from "react";
 
 interface IProps {
     setCurrentPage: (e: number) => void;
@@ -19,7 +18,6 @@ const Pagination = ({
     setRecordPerPage: setCarsPerPage,
     recordPerPage: carsPerPage,
 }: IProps) => {
-    const [selectAvailable, setSelectAvailable] = useState("All");
     const getPageNumbers = () => {
         const pageNumbers = [];
 
@@ -55,20 +53,20 @@ const Pagination = ({
     };
 
     return (
-        <nav className="flex flex-col md:flex-row md:justify-around lg:justify-evenly items-center px-4 md:px-6 mt-4">
-            <div className="flex flex-row w-[300px] px-2">
-                <div className="-mt-px flex w-0 flex-1 justify-start sm:justify-end">
+        <nav className="flex flex-col md:flex-row md:justify-around lg:justify-evenly items-center px-4 pt-2 pb-4 md:px-6 mt-4 bg-white rounded-[10px] shadow-md shadow-emerald-900">
+            <div className="flex flex-row mr-[150px] px-2">
+                <div className="-mt-px flex flex-1 justify-start sm:justify-end">
                     <button
                         onClick={() => setCurrentPage(currentPage - 1)}
                         disabled={currentPage <= 1}
-                        className="inline-flex items-center border-t-2 border-transparent pr-1 pt-4 text-sm sm:text-base lg:text-lg font-medium  hover:border-gray-300"
+                        className="inline-flex items-center border-t-2 border-transparent pr-1 pt-4 text-sm sm:text-base lg:text-lg font-medium  hover:border-gray-400"
                     >
                         <ArrowLongLeftIcon
                             className={`${
                                 currentPage <= 1
-                                    ? "text-lime-300"
-                                    : "text-lime-700"
-                            } mr-3 h-6 w-6 text-gray-400`}
+                                    ? "text-emerald-400"
+                                    : "text-emerald-900"
+                            } mr-3 h-6 w-6 text-gray-500`}
                             aria-hidden="true"
                         />
                     </button>
@@ -99,14 +97,14 @@ const Pagination = ({
                     <button
                         onClick={() => setCurrentPage(currentPage + 1)}
                         disabled={currentPage >= totalPages}
-                        className="inline-flex items-center border-t-2 border-transparent pl-1 pt-4 text-sm sm:text-base lg:text-lg font-medium hover:border-gray-300"
+                        className="inline-flex items-center border-t-2 border-transparent pl-1 pt-4 text-sm sm:text-base lg:text-lg font-medium hover:border-gray-400"
                     >
                         <ArrowLongRightIcon
                             className={`${
                                 currentPage >= totalPages
-                                    ? "text-lime-300"
-                                    : "text-lime-700"
-                            } mr-3 h-6 w-6 text-gray-400`}
+                                    ? "text-emerald-400"
+                                    : "text-emerald-900"
+                            } mr-3 h-6 w-6 text-gray-500`}
                             aria-hidden="true"
                         />
                     </button>
